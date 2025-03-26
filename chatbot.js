@@ -1,17 +1,5 @@
 window.addEventListener('load', function () {
   console.log("✅ Chatbot script loaded");
-
-  var testDiv = document.createElement("div");
-  testDiv.innerText = "Chatbot test loaded 🎉";
-  testDiv.style.position = "fixed";
-  testDiv.style.top = "0";
-  testDiv.style.right = "0";
-  testDiv.style.background = "green";
-  testDiv.style.color = "white";
-  testDiv.style.padding = "5px";
-  testDiv.style.zIndex = "99999";
-  document.body.appendChild(testDiv);
-
   (function () {
     function createEl(tag, attrs, text) {
       var el = document.createElement(tag);
