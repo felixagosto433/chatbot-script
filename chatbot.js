@@ -59,8 +59,9 @@ window.addEventListener('load', function () {
       })
         .then(function (res) { return res.json(); })
         .then(function (data) {
-          var reply = data.reply || "Sorry, I couldn't understand that.";
-          addMessage("Bot: " + reply, "bot-message");
+          var replies = data.response || ["Sorry, I couldn't understand that."];
+          var formattedReply = Array.isArray(replies) ? replies.join("\n\n") : replies;
+          addMessage("Bot: " + formattedReply, "bot-message");
         })
         .catch(function () {
           addMessage("Bot: Sorry, something went wrong.", "bot-message");
