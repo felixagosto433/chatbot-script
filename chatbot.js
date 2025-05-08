@@ -131,6 +131,7 @@ window.addEventListener('load', function () {
       })
         .then(res => res.json())
         .then(data => {
+          console.log("🧪 Received from backend:", data);
           const supplements = data.response || [];
 
           if (!Array.isArray(supplements) || supplements.length === 0) {
