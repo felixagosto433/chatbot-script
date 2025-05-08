@@ -40,7 +40,14 @@ window.addEventListener('load', function () {
     });
 
     function addMessage(content, className) {
-      var msg = createEl("div", { class: className }, content);
+      var msg = createEl("div", { class: className });
+
+      if (className === "bot-message") {
+        msg.innerHTML = content.replace(/\n/g, "<br>");  // allow line breaks
+      } else {
+        msg.textContent = content;
+      }
+
       messages.appendChild(msg);
       messages.scrollTop = messages.scrollHeight;
     }
@@ -60,22 +67,25 @@ window.addEventListener('load', function () {
         .then(function (res) { return res.json(); })
         .then(function (data) {
           var replies = data.response || ["Sorry, I couldn't understand that."];
+          console.log("🤖 Raw replies:", replies);
+
           var formattedReply;
 
           if (Array.isArray(replies)) {
-            formattedReply = replies.map(function(item) {
+            formattedReply = replies.map(function (item) {
               return (
-                "🔹 " + item.name + " ($" + item.price + ")\n" +
-                item.description + "\n" +
-                (item.usage ? "💊 Uso: " + item.usage + "\n" : "") +
-                (item.link ? "🔗 Ver producto: " + item.link : "")
+                "🔹 <strong>" + item.name + "</strong> ($" + item.price + ")<br>" +
+                item.description + "<br>" +
+                (item.usage ? "💊 <em>Uso:</em> " + item.usage + "<br>" : "") +
+                (item.recommended_for ? "🎯 <em>Recomendado para:</em> " + item.recommended_for.join(", ") + "<br>" : "") +
+                (item.link ? "🔗 <a href='" + item.link + "' target='_blank'>Ver producto</a>" : "")
               );
-            }).join("\n\n");
+            }).join("<br><br>");
           } else {
             formattedReply = replies;
           }
 
-          addMessage("Bot:\n" + formattedReply, "bot-message");
+          addMessage(formattedReply, "bot-message");
         })
         .catch(function () {
           addMessage("Bot: Sorry, something went wrong.", "bot-message");
