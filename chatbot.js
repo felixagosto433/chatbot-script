@@ -31,8 +31,8 @@ window.addEventListener('load', function () {
         position: fixed;
         bottom: 90px;
         right: 20px;
-        width: 320px;
-        max-height: 500px;
+        width: 400px;
+        max-height: 600px;
         background: white;
         border: 1px solid #ccc;
         border-radius: 10px;
@@ -85,7 +85,7 @@ window.addEventListener('load', function () {
     `;
     document.head.appendChild(style);
 
-    // Build chatbot interface
+    // Build interface
     const container = createEl("div", { id: "chatbot-container" });
     const messages = createEl("div", { id: "chatbot-messages" });
     const inputContainer = createEl("div", { id: "chatbot-input-container" });
@@ -104,6 +104,10 @@ window.addEventListener('load', function () {
     const toggle = createEl("button", { id: "chatbot-toggle" }, "💬");
     document.body.appendChild(toggle);
 
+    // 💬 Welcome message
+    addMessage("Bot: Hola! ¿Necesitas ayuda para escoger tus suplementos?", "bot-message");
+
+    // Toggle open/close
     toggle.addEventListener("click", () => {
       container.style.display =
         container.style.display === "none" || container.style.display === ""
