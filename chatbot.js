@@ -85,7 +85,7 @@ window.addEventListener('load', function () {
     `;
     document.head.appendChild(style);
 
-    // Build interface
+    // Build chatbot UI
     const container = createEl("div", { id: "chatbot-container" });
     const messages = createEl("div", { id: "chatbot-messages" });
     const inputContainer = createEl("div", { id: "chatbot-input-container" });
@@ -148,11 +148,11 @@ window.addEventListener('load', function () {
           const formatted = supplements.map(item => {
             if (typeof item === "object") {
               return `
-<b>${item.name}</b> - $${item.price}<br>
-<b>Categoría:</b> ${item.category}<br>
-<b>Descripción:</b> ${item.description}<br>
-<b>Uso:</b> ${item.usage}<br>
-<a href="${item.link}" target="_blank">Ver producto</a>
+<b>🟢 ${item.name}</b> - 💲${item.price}<br>
+<b>🏷️ Categoría:</b> ${item.category}<br>
+<b>📝 Descripción:</b> ${item.description}<br>
+<b>💊 Uso:</b> ${item.usage}<br>
+🔗 <a href="${item.link}" target="_blank">Ver producto</a>
               `.trim();
             } else {
               return item;
