@@ -9,7 +9,7 @@ window.addEventListener('load', function () {
       return el;
     }
 
-    // Styles
+    // Inject styles
     const style = createEl("style");
     style.textContent = `
       #chatbot-toggle {
@@ -85,6 +85,7 @@ window.addEventListener('load', function () {
     `;
     document.head.appendChild(style);
 
+    // Build chatbot interface
     const container = createEl("div", { id: "chatbot-container" });
     const messages = createEl("div", { id: "chatbot-messages" });
     const inputContainer = createEl("div", { id: "chatbot-input-container" });
@@ -132,6 +133,7 @@ window.addEventListener('load', function () {
         .then(res => res.json())
         .then(data => {
           console.log("🧪 Received from backend:", data);
+
           const supplements = data.response || [];
 
           if (!Array.isArray(supplements) || supplements.length === 0) {
@@ -140,19 +142,24 @@ window.addEventListener('load', function () {
           }
 
           const formatted = supplements.map(item => {
-            return `
+            if (typeof item === "object") {
+              return `
 <b>${item.name}</b> - $${item.price}<br>
-<span><b>Categoría:</b> ${item.category}</span><br>
-<span><b>Descripción:</b> ${item.description}</span><br>
-<span><b>Uso:</b> ${item.usage}</span><br>
+<b>Categoría:</b> ${item.category}<br>
+<b>Descripción:</b> ${item.description}<br>
+<b>Uso:</b> ${item.usage}<br>
 <a href="${item.link}" target="_blank">Ver producto</a>
-            `.trim();
+              `.trim();
+            } else {
+              return item;
+            }
           }).join("<br><br>");
 
-          addMessage("GoShop:<br>" + formatted, "bot-message");
+          addMessage("Bot:<br>" + formatted, "bot-message");
         })
-        .catch(() => {
-          addMessage("GoShop: Sorry, something went wrong.", "bot-message");
+        .catch(err => {
+          console.error("🔥 Fetch failed:", err);
+          addMessage("Bot: Sorry, something went wrong.", "bot-message");
         });
     }
 
