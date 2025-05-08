@@ -104,23 +104,22 @@ window.addEventListener('load', function () {
     const toggle = createEl("button", { id: "chatbot-toggle" }, "💬");
     document.body.appendChild(toggle);
 
-    // 💬 Welcome message
-    addMessage("Bot: Hola! ¿Necesitas ayuda para escoger tus suplementos?", "bot-message");
-
-    // Toggle open/close
-    toggle.addEventListener("click", () => {
-      container.style.display =
-        container.style.display === "none" || container.style.display === ""
-          ? "flex"
-          : "none";
-    });
-
+    // ✅ Add welcome message AFTER messages container exists
     function addMessage(content, className) {
       const msg = createEl("div", { class: className });
       msg.innerHTML = content;
       messages.appendChild(msg);
       messages.scrollTop = messages.scrollHeight;
     }
+
+    addMessage("Bot: 👋 Hola! ¿Necesitas ayuda para escoger tus suplementos?", "bot-message");
+
+    toggle.addEventListener("click", () => {
+      container.style.display =
+        container.style.display === "none" || container.style.display === ""
+          ? "flex"
+          : "none";
+    });
 
     function sendMessage() {
       const userMessage = input.value.trim();
