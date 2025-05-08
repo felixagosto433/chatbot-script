@@ -9,7 +9,7 @@ window.addEventListener('load', function () {
       return el;
     }
 
-    // Chat styles
+    // Styles
     const style = createEl("style");
     style.textContent = `
       #chatbot-toggle {
@@ -31,8 +31,8 @@ window.addEventListener('load', function () {
         position: fixed;
         bottom: 90px;
         right: 20px;
-        width: 300px;
-        max-height: 400px;
+        width: 320px;
+        max-height: 500px;
         background: white;
         border: 1px solid #ccc;
         border-radius: 10px;
@@ -75,11 +75,16 @@ window.addEventListener('load', function () {
 
       .bot-message {
         margin-bottom: 10px;
+        white-space: pre-wrap;
+      }
+
+      .bot-message a {
+        color: #4CAF50;
+        text-decoration: underline;
       }
     `;
     document.head.appendChild(style);
 
-    // DOM Elements
     const container = createEl("div", { id: "chatbot-container" });
     const messages = createEl("div", { id: "chatbot-messages" });
     const inputContainer = createEl("div", { id: "chatbot-input-container" });
@@ -106,7 +111,8 @@ window.addEventListener('load', function () {
     });
 
     function addMessage(content, className) {
-      const msg = createEl("div", { class: className }, content);
+      const msg = createEl("div", { class: className });
+      msg.innerHTML = content;
       messages.appendChild(msg);
       messages.scrollTop = messages.scrollHeight;
     }
@@ -125,22 +131,27 @@ window.addEventListener('load', function () {
       })
         .then(res => res.json())
         .then(data => {
-          let replies = data.response || ["Sorry, I couldn't understand that."];
+          const supplements = data.response || [];
 
-          if (Array.isArray(replies)) {
-            replies = replies.map(item => {
-              if (typeof item === "object") {
-                return `${item.name} - ${item.description} ($${item.price})`;
-              }
-              return item;
-            });
+          if (!Array.isArray(supplements) || supplements.length === 0) {
+            addMessage("Bot: No supplements found for your query.", "bot-message");
+            return;
           }
 
-          const formattedReply = Array.isArray(replies) ? replies.join("\n\n") : replies;
-          addMessage("Bot: " + formattedReply, "bot-message");
+          const formatted = supplements.map(item => {
+            return `
+<b>${item.name}</b> - $${item.price}<br>
+<span><b>Categoría:</b> ${item.category}</span><br>
+<span><b>Descripción:</b> ${item.description}</span><br>
+<span><b>Uso:</b> ${item.usage}</span><br>
+<a href="${item.link}" target="_blank">Ver producto</a>
+            `.trim();
+          }).join("<br><br>");
+
+          addMessage("GoShop:<br>" + formatted, "bot-message");
         })
         .catch(() => {
-          addMessage("Bot: Sorry, something went wrong.", "bot-message");
+          addMessage("GoShop: Sorry, something went wrong.", "bot-message");
         });
     }
 
