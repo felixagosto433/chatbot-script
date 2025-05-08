@@ -43,7 +43,7 @@ window.addEventListener('load', function () {
       var msg = createEl("div", { class: className });
 
       if (className === "bot-message") {
-        msg.innerHTML = content.replace(/\n/g, "<br>");  // allow line breaks
+        msg.innerHTML = content.replace(/\n/g, "<br>");
       } else {
         msg.textContent = content;
       }
@@ -66,28 +66,35 @@ window.addEventListener('load', function () {
       })
         .then(function (res) { return res.json(); })
         .then(function (data) {
-          var replies = data.response || ["Sorry, I couldn't understand that."];
-          console.log("🤖 Raw replies:", replies);
+          const replies = data.response || ["Sorry, I couldn't understand that."];
+          console.log("🧪 Raw replies:", replies); // Debugging output
 
-          var formattedReply;
+          let formattedReply = "";
 
           if (Array.isArray(replies)) {
-            formattedReply = replies.map(function (item) {
-              return (
-                "🔹 <strong>" + item.name + "</strong> ($" + item.price + ")<br>" +
-                item.description + "<br>" +
-                (item.usage ? "💊 <em>Uso:</em> " + item.usage + "<br>" : "") +
-                (item.recommended_for ? "🎯 <em>Recomendado para:</em> " + item.recommended_for.join(", ") + "<br>" : "") +
-                (item.link ? "🔗 <a href='" + item.link + "' target='_blank'>Ver producto</a>" : "")
-              );
-            }).join("<br><br>");
+            if (typeof replies[0] === "object") {
+              formattedReply = replies.map(function (item) {
+                return (
+                  "🔹 <strong>" + item.name + "</strong> ($" + item.price + ")<br>" +
+                  item.description + "<br>" +
+                  (item.usage ? "💊 <em>Uso:</em> " + item.usage + "<br>" : "") +
+                  (item.recommended_for ? "🎯 <em>Recomendado para:</em> " + item.recommended_for.join(", ") + "<br>" : "") +
+                  (item.link ? "🔗 <a href='" + item.link + "' target='_blank'>Ver producto</a>" : "")
+                );
+              }).join("<br><br>");
+            } else {
+              formattedReply = replies.join("<br><br>");
+            }
+          } else if (typeof replies === "object") {
+            formattedReply = JSON.stringify(replies, null, 2);
           } else {
-            formattedReply = replies;
+            formattedReply = replies.toString();
           }
 
           addMessage(formattedReply, "bot-message");
         })
-        .catch(function () {
+        .catch(function (err) {
+          console.error("❌ Fetch error:", err);
           addMessage("Bot: Sorry, something went wrong.", "bot-message");
         });
     }
