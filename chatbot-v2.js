@@ -31,8 +31,9 @@ window.addEventListener('load', function () {
         position: fixed;
         bottom: 90px;
         right: 20px;
-        width: 400px;
-        max-height: 600px;
+        width: 90vw;
+        max-width: 400px;
+        max-height: 70vh;
         background: white;
         border: 1px solid #ccc;
         border-radius: 10px;
