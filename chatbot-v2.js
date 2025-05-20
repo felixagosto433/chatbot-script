@@ -9,7 +9,15 @@ window.addEventListener('load', function () {
       return el;
     }
 
-    // Inject styles
+    function getUserId() {
+      let uid = localStorage.getItem("chat_user_id");
+      if (!uid) {
+        uid = crypto.randomUUID();
+        localStorage.setItem("chat_user_id", uid);
+      }
+      return uid;
+    }
+
     const style = createEl("style");
     style.textContent = `
       #chatbot-toggle {
@@ -83,18 +91,39 @@ window.addEventListener('load', function () {
         color: #4CAF50;
         text-decoration: underline;
       }
+
+      .bot-options {
+        margin-bottom: 10px;
+      }
+
+      .bot-option-button {
+        display: inline-block;
+        margin: 3px 5px;
+        padding: 6px 10px;
+        font-size: 13px;
+        border: 1px solid #4CAF50;
+        background: #f1f1f1;
+        color: #333;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .typing-indicator {
+        font-style: italic;
+        color: #888;
+        margin-bottom: 10px;
+      }
     `;
     document.head.appendChild(style);
 
-    // Build chatbot UI
     const container = createEl("div", { id: "chatbot-container" });
     const messages = createEl("div", { id: "chatbot-messages" });
     const inputContainer = createEl("div", { id: "chatbot-input-container" });
     const input = createEl("input", {
       id: "chatbot-input",
-      placeholder: "Ask me anything..."
+      placeholder: "Hazme una pregunta..."
     });
-    const sendBtn = createEl("button", { id: "chatbot-send" }, "Send");
+    const sendBtn = createEl("button", { id: "chatbot-send" }, "Enviar");
 
     inputContainer.appendChild(input);
     inputContainer.appendChild(sendBtn);
@@ -105,15 +134,37 @@ window.addEventListener('load', function () {
     const toggle = createEl("button", { id: "chatbot-toggle" }, "💬");
     document.body.appendChild(toggle);
 
-    // ✅ Add welcome message AFTER messages container exists
     function addMessage(content, className) {
       const msg = createEl("div", { class: className });
       msg.innerHTML = content;
       messages.appendChild(msg);
       messages.scrollTop = messages.scrollHeight;
+      return msg;
     }
 
-    addMessage("Bot: 👋 Hola! ¿Necesitas ayuda para escoger tus suplementos?", "bot-message");
+    function addOptions(options) {
+      const wrapper = createEl("div", { class: "bot-options" });
+      options.forEach(option => {
+        const btn = createEl("button", { class: "bot-option-button" }, option);
+        btn.onclick = () => {
+          wrapper.remove(); // Remove buttons once clicked
+          sendBotMessage(option); // Reuse the same flow
+        };
+        wrapper.appendChild(btn);
+      });
+      messages.appendChild(wrapper);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+      return addMessage("Bot está escribiendo...", "typing-indicator");
+    }
+
+    function removeTypingIndicator(indicator) {
+      if (indicator && indicator.remove) indicator.remove();
+    }
+
+    addMessage("Bot: 👋 ¡Hola! ¿Necesitas ayuda para escoger tus suplementos?", "bot-message");
 
     toggle.addEventListener("click", () => {
       container.style.display =
@@ -122,49 +173,57 @@ window.addEventListener('load', function () {
           : "none";
     });
 
-    function sendMessage() {
-      const userMessage = input.value.trim();
-      if (!userMessage) return;
+    function sendBotMessage(userMessage) {
+      addMessage("Tú: " + userMessage, "user-message");
 
-      addMessage("You: " + userMessage, "user-message");
+      const typingIndicator = showTypingIndicator();
       input.value = "";
 
       fetch("https://vast-escarpment-05453-5a02b964d113.herokuapp.com/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage })
+        body: JSON.stringify({
+          message: userMessage,
+          user_id: getUserId()
+        })
       })
         .then(res => res.json())
         .then(data => {
-          console.log("🧪 Received from backend:", data);
+          removeTypingIndicator(typingIndicator);
 
-          const supplements = data.response || [];
+          const botText = data.text || "🤖 No se recibió respuesta.";
+          const products = data.products || [];
+          const options = data.options || [];
 
-          if (!Array.isArray(supplements) || supplements.length === 0) {
-            addMessage("Bot: No supplements found for your query.", "bot-message");
-            return;
+          addMessage("Bot: " + botText, "bot-message");
+
+          if (products.length > 0) {
+            const formatted = products.map(item => `
+              <b>🟢 ${item.name}</b> - 💲${item.price}<br>
+              <b>🏷️ Categoría:</b> ${item.category}<br>
+              <b>📝 Descripción:</b> ${item.description}<br>
+              <b>💊 Uso:</b> ${item.usage}<br>
+              🔗 <a href="${item.link}" target="_blank">Ver producto</a>
+            `.trim()).join("<br><br>");
+
+            addMessage(formatted, "bot-message");
           }
 
-          const formatted = supplements.map(item => {
-            if (typeof item === "object") {
-              return `
-<b>🟢 ${item.name}</b> - 💲${item.price}<br>
-<b>🏷️ Categoría:</b> ${item.category}<br>
-<b>📝 Descripción:</b> ${item.description}<br>
-<b>💊 Uso:</b> ${item.usage}<br>
-🔗 <a href="${item.link}" target="_blank">Ver producto</a>
-              `.trim();
-            } else {
-              return item;
-            }
-          }).join("<br><br>");
-
-          addMessage("Bot:<br>" + formatted, "bot-message");
+          if (options.length > 0) {
+            addOptions(options);
+          }
         })
         .catch(err => {
+          removeTypingIndicator(typingIndicator);
           console.error("🔥 Fetch failed:", err);
-          addMessage("Bot: Sorry, something went wrong.", "bot-message");
+          addMessage("Bot: Lo siento, ocurrió un error.", "bot-message");
         });
+    }
+
+    function sendMessage() {
+      const userMessage = input.value.trim();
+      if (!userMessage) return;
+      sendBotMessage(userMessage);
     }
 
     sendBtn.addEventListener("click", sendMessage);
