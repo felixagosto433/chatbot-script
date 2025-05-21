@@ -164,7 +164,24 @@ window.addEventListener('load', function () {
       if (indicator && indicator.remove) indicator.remove();
     }
 
-    addMessage("Bot: 👋 ¡Hola! ¿Necesitas ayuda para escoger tus suplementos?", "bot-message");
+    // 🧠 Replace hardcoded welcome with real bot response from backend
+    fetch("https://vast-escarpment-05453-5a02b964d113.herokuapp.com/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: "",
+        user_id: getUserId()
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.text) addMessage("Bot: " + data.text, "bot-message");
+        if (data.options?.length) addOptions(data.options);
+      })
+      .catch(err => {
+        console.error("🔥 Initial chat trigger failed:", err);
+        addMessage("Bot: Hola 👋 Pero no pude conectarme al servidor.", "bot-message");
+      });
 
     toggle.addEventListener("click", () => {
       container.style.display =
