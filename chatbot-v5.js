@@ -78,13 +78,26 @@ window.addEventListener('load', function () {
       }
 
       .user-message {
-        font-weight: bold;
-        margin-bottom: 5px;
+        font-weight: normal;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #e6f7ff;
+        border-radius: 12px;
+        border: 1px solid #b3e0ff;
+        max-width: 80%;
+        align-self: flex-end;
+        text-align: right;
       }
 
       .bot-message {
         margin-bottom: 10px;
-        white-space: pre-wrap;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 12px;
+        border: 1px solid #ddd;
+        max-width: 80%;
+        align-self: flex-start;
+        text-align: left;
       }
 
       .bot-message a {
@@ -101,9 +114,9 @@ window.addEventListener('load', function () {
         margin: 3px 5px;
         padding: 6px 10px;
         font-size: 13px;
-        border: 1px solid #4CAF50;
-        background: #f1f1f1;
-        color: #333;
+        border: 2px solid #4CAF50;
+        background: #ffffff;
+        color: #000000;
         border-radius: 5px;
         cursor: pointer;
       }
@@ -112,6 +125,19 @@ window.addEventListener('load', function () {
         font-style: italic;
         color: #888;
         margin-bottom: 10px;
+      }
+      
+      .message-wrapper {
+        display: flex;
+        margin-bottom: 8px;
+      }
+  
+      .message-wrapper.bot {
+        justify-content: flex-start;
+      }
+  
+      .message-wrapper.user {
+        justify-content: flex-end;
       }
     `;
     document.head.appendChild(style);
@@ -135,10 +161,17 @@ window.addEventListener('load', function () {
     document.body.appendChild(toggle);
 
     function addMessage(content, className) {
+      const wrapper = createEl("div", {
+        class: className === "user-message" ? "message-wrapper user" : "message-wrapper bot"
+      });
+    
       const msg = createEl("div", { class: className });
       msg.innerHTML = content;
-      messages.appendChild(msg);
+    
+      wrapper.appendChild(msg);
+      messages.appendChild(wrapper);
       messages.scrollTop = messages.scrollHeight;
+    
       return msg;
     }
 
@@ -175,7 +208,7 @@ window.addEventListener('load', function () {
     })
       .then(res => res.json())
       .then(data => {
-        if (data.text) addMessage("Bot: " + data.text, "bot-message");
+        if (data.text) addMessage("💊" + data.text, "bot-message");
         if (data.options?.length) addOptions(data.options);
       })
       .catch(err => {
@@ -191,7 +224,7 @@ window.addEventListener('load', function () {
     });
 
     function sendBotMessage(userMessage) {
-      addMessage("Tú: " + userMessage, "user-message");
+      addMessage(userMessage, "user-message");
 
       const typingIndicator = showTypingIndicator();
       input.value = "";
@@ -212,16 +245,18 @@ window.addEventListener('load', function () {
           const products = data.products || [];
           const options = data.options || [];
 
-          addMessage("Bot: " + botText, "bot-message");
+          addMessage("💊" + botText, "bot-message");
 
           if (products.length > 0) {
             const formatted = products.map(item => `
+              <div style="margin-bottom: 12px;">
               <b>🟢 ${item.name}</b> - 💲${item.price}<br>
               <b>🏷️ Categoría:</b> ${item.category}<br>
               <b>📝 Descripción:</b> ${item.description}<br>
               <b>💊 Uso:</b> ${item.usage}<br>
-              🔗 <a href="${item.link}" target="_blank">Ver producto</a>
-            `.trim()).join("<br><br>");
+              <a href="${item.link}" target="_blank">🔗 Ver producto</a>
+            </div>
+          `).join("");
 
             addMessage(formatted, "bot-message");
           }
