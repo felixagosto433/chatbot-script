@@ -33,6 +33,15 @@ window.addEventListener('load', function () {
         height: 60px;
         font-size: 30px;
         cursor: pointer;
+        transition: transform 0.3s ease;
+      }
+      
+      #chatbot-toggle:hover {
+        transform: scale(1.1); /* Enlarge on hover */
+      }
+      
+      #chatbot-toggle:active {
+        transform: scale(0.95); /* Slight shrink on click */
       }
 
       #chatbot-container {
@@ -42,13 +51,13 @@ window.addEventListener('load', function () {
         width: 90vw;
         max-width: 400px;
         max-height: 70vh;
-        background: white;
+        background: #f0f0f0;
         border: 1px solid #ccc;
         border-radius: 10px;
         display: none;
         flex-direction: column;
         z-index: 9998;
-        font-family: Arial, sans-serif;
+        font-family: 'Poppins', sans-serif;
       }
 
       #chatbot-messages {
@@ -119,6 +128,11 @@ window.addEventListener('load', function () {
         color: #000000;
         border-radius: 5px;
         cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+      }
+      
+      .bot-option-button:hover {
+        transform: scale(1.05);
       }
 
       .typing-indicator {
@@ -140,6 +154,12 @@ window.addEventListener('load', function () {
         justify-content: flex-end;
       }
     `;
+    
+    const fontLink = createEl("link", {
+      rel: "stylesheet",
+      href: "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+    });
+    document.head.appendChild(fontLink);
     document.head.appendChild(style);
 
     const container = createEl("div", { id: "chatbot-container" });
@@ -159,7 +179,7 @@ window.addEventListener('load', function () {
 
     const toggle = createEl("button", { id: "chatbot-toggle" }, "💬");
     document.body.appendChild(toggle);
-
+    
     function addMessage(content, className) {
       const wrapper = createEl("div", {
         class: className === "user-message" ? "message-wrapper user" : "message-wrapper bot"
@@ -202,13 +222,13 @@ window.addEventListener('load', function () {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        message: "",
+        message: "👋 ¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte?",
         user_id: getUserId()
       })
     })
       .then(res => res.json())
       .then(data => {
-        if (data.text) addMessage("💊" + data.text, "bot-message");
+        if (data.text) addMessage( data.text, "bot-message");
         if (data.options?.length) addOptions(data.options);
       })
       .catch(err => {
@@ -245,7 +265,7 @@ window.addEventListener('load', function () {
           const products = data.products || [];
           const options = data.options || [];
 
-          addMessage("💊" + botText, "bot-message");
+          addMessage(botText, "bot-message");
 
           if (products.length > 0) {
             const formatted = products.map(item => `
