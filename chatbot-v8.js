@@ -133,7 +133,7 @@ window.addEventListener('load', function () {
         margin: 3px 5px;
         padding: 6px 10px;
         font-size: 13px;
-        border: 2px solid #4CAF50;
+        border: 2px solid #e6a23c;
         background: #ffffff;
         color: #000000;
         border-radius: 5px;
