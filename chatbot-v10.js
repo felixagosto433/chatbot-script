@@ -253,8 +253,9 @@ window.addEventListener('load', function () {
       options.forEach(option => {
         const btn = createEl("button", { class: "bot-option-button" }, option);
         btn.onclick = () => {
-          wrapper.remove(); // Remove buttons once clicked
-          sendBotMessage(option); // Reuse the same flow
+          wrapper.querySelectorAll("button").forEach(b => b.disabled = true); // disable all
+          wrapper.remove();
+          sendBotMessage(option);
         };
         wrapper.appendChild(btn);
       });
