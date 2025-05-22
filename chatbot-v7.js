@@ -54,10 +54,20 @@ window.addEventListener('load', function () {
         background: #f0f0f0;
         border: 1px solid #ccc;
         border-radius: 10px;
-        display: none;
+        display: flex;
         flex-direction: column;
+        opacity: 0;
+        transform: translateY(20px);
+        pointer-events: none;
+        transition: all 0.3s ease;
         z-index: 9998;
         font-family: 'Poppins', sans-serif;
+      }
+      
+      #chatbot-container.visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
       }
 
       #chatbot-messages {
@@ -153,6 +163,49 @@ window.addEventListener('load', function () {
       .message-wrapper.user {
         justify-content: flex-end;
       }
+
+      .typing-indicator {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 10px;
+        padding: 10px;
+      }
+      
+      .typing-indicator .dot {
+        width: 8px;
+        height: 8px;
+        background-color: #aaa;
+        border-radius: 50%;
+        animation: typing 1s infinite ease-in-out;
+      }
+      
+      .typing-indicator .dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .typing-indicator .dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      
+      @keyframes typing {
+        0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+        40% { transform: scale(1); opacity: 1; }
+      }
+
+      .bot-message,
+      .user-message {
+        animation: fadeInUp 0.3s ease;
+      }
+      
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
     `;
     
     const fontLink = createEl("link", {
@@ -210,7 +263,13 @@ window.addEventListener('load', function () {
     }
 
     function showTypingIndicator() {
-      return addMessage("Bot está escribiendo...", "typing-indicator");
+      const wrapper = createEl("div", { class: "message-wrapper bot" });
+      const indicator = createEl("div", { class: "typing-indicator" });
+      indicator.innerHTML = `<span class="dot"></span><span class="dot"></span><span class="dot"></span>`;
+      wrapper.appendChild(indicator);
+      messages.appendChild(wrapper);
+      messages.scrollTop = messages.scrollHeight;
+      return wrapper;
     }
 
     function removeTypingIndicator(indicator) {
@@ -222,7 +281,7 @@ window.addEventListener('load', function () {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        message: "👋 ¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte?",
+        message: "",
         user_id: getUserId()
       })
     })
@@ -237,10 +296,7 @@ window.addEventListener('load', function () {
       });
 
     toggle.addEventListener("click", () => {
-      container.style.display =
-        container.style.display === "none" || container.style.display === ""
-          ? "flex"
-          : "none";
+      container.classList.toggle("visible");
     });
 
     function sendBotMessage(userMessage) {
