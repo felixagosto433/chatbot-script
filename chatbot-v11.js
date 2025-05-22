@@ -302,51 +302,63 @@ window.addEventListener('load', function () {
 
     function sendBotMessage(userMessage) {
       addMessage(userMessage, "user-message");
-
+    
       const typingIndicator = showTypingIndicator();
-      input.value = "";
-
-      fetch("https://vast-escarpment-05453-5a02b964d113.herokuapp.com/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: userMessage,
-          user_id: getUserId()
+      input.disabled = true;
+      sendBtn.disabled = true;
+    
+      // ⏳ Delay sending the message for 4 seconds
+      setTimeout(() => {
+        fetch("https://vast-escarpment-05453-5a02b964d113.herokuapp.com/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: userMessage,
+            user_id: getUserId()
+          })
         })
-      })
-        .then(res => res.json())
-        .then(data => {
-          removeTypingIndicator(typingIndicator);
-
-          const botText = data.text || "🤖 No se recibió respuesta.";
-          const products = data.products || [];
-          const options = data.options || [];
-
-          addMessage(botText, "bot-message");
-
-          if (products.length > 0) {
-            const formatted = products.map(item => `
-              <div style="margin-bottom: 12px;">
-              <b>🟢 ${item.name}</b> - 💲${item.price}<br>
-              <b>🏷️ Categoría:</b> ${item.category}<br>
-              <b>📝 Descripción:</b> ${item.description}<br>
-              <b>💊 Uso:</b> ${item.usage}<br>
-              <a href="${item.link}" target="_blank">🔗 Ver producto</a>
-            </div>
-          `).join("");
-
-            addMessage(formatted, "bot-message");
-          }
-
-          if (options.length > 0) {
-            addOptions(options);
-          }
-        })
-        .catch(err => {
-          removeTypingIndicator(typingIndicator);
-          console.error("🔥 Fetch failed:", err);
-          addMessage("Bot: Lo siento, ocurrió un error.", "bot-message");
-        });
+          .then(res => res.json())
+          .then(data => {
+            removeTypingIndicator(typingIndicator);
+    
+            const botText = data.text || "🤖 No se recibió respuesta.";
+            const products = data.products || [];
+            const options = data.options || [];
+    
+            addMessage(botText, "bot-message");
+    
+            if (products.length > 0) {
+              const formatted = products.map(item => `
+                <div style="margin-bottom: 12px;">
+                  <b>🟢 ${item.name}</b> - 💲${item.price}<br>
+                  <b>🏷️ Categoría:</b> ${item.category}<br>
+                  <b>📝 Descripción:</b> ${item.description}<br>
+                  <b>💊 Uso:</b> ${item.usage}<br>
+                  <a href="${item.link}" target="_blank">🔗 Ver producto</a>
+                </div>
+              `).join("");
+    
+              addMessage(formatted, "bot-message");
+            }
+    
+            if (options.length > 0) {
+              addOptions(options);
+            }
+    
+            // ✅ Re-enable input
+            input.disabled = false;
+            sendBtn.disabled = false;
+          })
+          .catch(err => {
+            removeTypingIndicator(typingIndicator);
+            console.error("🔥 Fetch failed:", err);
+            addMessage("Lo siento, ocurrió un error.", "bot-message");
+    
+            // ✅ Still re-enable even on error
+            input.disabled = false;
+            sendBtn.disabled = false;
+          });
+      }, 4000); // ⏱ 4-second delay
     }
 
     function sendMessage() {
