@@ -229,9 +229,6 @@ window.addEventListener('load', function () {
     container.appendChild(messages);
     container.appendChild(inputContainer);
     document.body.appendChild(container);
-    input.value = "";
-
-    addBotMessage("Hola! ¿Necesitas ayuda con nuestros productos?");
     
     const toggle = createEl("button", { id: "chatbot-toggle" }, "💬");
     document.body.appendChild(toggle);
@@ -279,6 +276,8 @@ window.addEventListener('load', function () {
     function removeTypingIndicator(indicator) {
       if (indicator && indicator.remove) indicator.remove();
     }
+
+    addMessage("Hola! ¿Necesitas ayuda con nuestros productos?");
 
     // 🧠 Replace hardcoded welcome with real bot response from backend
     fetch("https://vast-escarpment-05453-5a02b964d113.herokuapp.com/chat", {
@@ -368,6 +367,7 @@ window.addEventListener('load', function () {
       const userMessage = input.value.trim();
       if (!userMessage) return;
       sendBotMessage(userMessage);
+      input.value = "";
     }
 
     sendBtn.addEventListener("click", sendMessage);
