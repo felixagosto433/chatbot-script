@@ -139,6 +139,11 @@ window.addEventListener('load', function () {
         border-radius: 5px;
         cursor: pointer;
         transition: transform 0.2s ease-in-out;
+        box-shadow: 0 2px 4px #e8c187; /* ✅ new line for shadow */
+      }
+
+      .bot-options {
+        animation: fadeInUp 0.3s ease; /* ✅ animate container too */
       }
       
       .bot-option-button:hover {
@@ -196,6 +201,12 @@ window.addEventListener('load', function () {
         animation: fadeInUp 0.3s ease;
       }
       
+      .bot-options,
+      .bot-option-button {
+        animation: fadeInUp 0.3s ease forwards;
+        opacity: 0; /* start hidden until animated in */
+      }
+            
       @keyframes fadeInUp {
         from {
           opacity: 0;
@@ -250,8 +261,11 @@ window.addEventListener('load', function () {
 
     function addOptions(options) {
       const wrapper = createEl("div", { class: "bot-options" });
-      options.forEach(option => {
-        const btn = createEl("button", { class: "bot-option-button" }, option);
+      options.forEach((option, index) => {
+        const btn = createEl("button", { 
+          class: "bot-option-button", 
+          style: `animation-delay: ${index * 100}ms;` 
+        }, option);
         btn.onclick = () => {
           wrapper.querySelectorAll("button").forEach(b => b.disabled = true); // disable all
           wrapper.remove();
