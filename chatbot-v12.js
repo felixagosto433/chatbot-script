@@ -223,13 +223,16 @@ window.addEventListener('load', function () {
       placeholder: "Hazme una pregunta..."
     });
     const sendBtn = createEl("button", { id: "chatbot-send" }, "Enviar");
-
+    
     inputContainer.appendChild(input);
     inputContainer.appendChild(sendBtn);
     container.appendChild(messages);
     container.appendChild(inputContainer);
     document.body.appendChild(container);
+    input.value = "";
 
+    addBotMessage("Hola! ¿Necesitas ayuda con nuestros productos?");
+    
     const toggle = createEl("button", { id: "chatbot-toggle" }, "💬");
     document.body.appendChild(toggle);
     
