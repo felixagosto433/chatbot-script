@@ -358,7 +358,7 @@ window.addEventListener('load', function () {
             input.disabled = false;
             sendBtn.disabled = false;
           });
-      }, 4000); // ⏱ 4-second delay
+      }, 1000); // ⏱ 4-second delay
     }
 
     function sendMessage() {
