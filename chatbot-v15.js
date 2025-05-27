@@ -291,7 +291,7 @@ window.addEventListener('load', function () {
       if (indicator && indicator.remove) indicator.remove();
     }
 
-    addMessage("Hola! ¿Necesitas ayuda con nuestros productos?");
+    addMessage("👋 ¿Necesitas ayuda con nuestros productos?");
 
     // 🧠 Replace hardcoded welcome with real bot response from backend
     fetch("https://vast-escarpment-05453-5a02b964d113.herokuapp.com/chat", {
