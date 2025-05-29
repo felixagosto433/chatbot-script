@@ -294,7 +294,7 @@ window.addEventListener('load', function () {
     addMessage("👋 ¿Necesitas ayuda con nuestros productos?");
 
     // 🧠 Replace hardcoded welcome with real bot response from backend
-    fetch("https://vast-escarpment-05453-5a02b964d113.herokuapp.com/chat", {
+    fetch("https://production-heroku.herokuapp.com/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
