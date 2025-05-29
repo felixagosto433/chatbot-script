@@ -294,7 +294,7 @@ window.addEventListener('load', function () {
     addMessage("👋 ¿Necesitas ayuda con nuestros productos?");
 
     // 🧠 Replace hardcoded welcome with real bot response from backend
-    fetch("https://production-goshop.herokuapp.com/chat", {
+    fetch("https://production-goshop-d116fe7863dc.herokuapp.com/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
