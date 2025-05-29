@@ -325,7 +325,7 @@ window.addEventListener('load', function () {
     
       // ⏳ Delay sending the message for 4 seconds
       setTimeout(() => {
-        fetch("https://vast-escarpment-05453-5a02b964d113.herokuapp.com/chat", {
+        fetch("https://production-goshop-d116fe7863dc.herokuapp.com/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
