@@ -293,25 +293,6 @@ window.addEventListener('load', function () {
 
     addMessage("👋 ¿Necesitas ayuda con nuestros productos?");
 
-    // 🧠 Replace hardcoded welcome with real bot response from backend
-    fetch("https://production-goshop-d116fe7863dc.herokuapp.com/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: "",
-        user_id: getUserId()
-      })
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.text) addMessage( data.text, "bot-message");
-        if (data.options?.length) addOptions(data.options);
-      })
-      .catch(err => {
-        console.error("🔥 Initial chat trigger failed:", err);
-        addMessage("Bot: Hola 👋 Pero no pude conectarme al servidor.", "bot-message");
-      });
-
     toggle.addEventListener("click", () => {
       container.classList.toggle("visible");
     
