@@ -325,7 +325,6 @@ window.addEventListener('load', function () {
       input.disabled = true;
       sendBtn.disabled = true;
     
-      // ⏳ Delay sending the message for 4 seconds
       setTimeout(() => {
         fetch("https://production-goshop-d116fe7863dc.herokuapp.com/chat", {
           method: "POST",
@@ -339,12 +338,14 @@ window.addEventListener('load', function () {
           .then(data => {
             removeTypingIndicator(typingIndicator);
     
-            const botText = data.text || "🤖 No se recibió respuesta.";
-            const products = data.products || [];
-            const options = data.options || [];
+            const botText = data.text?.trim() || "🤖 No entendí eso, ¿puedes intentarlo de otra forma?";
+            const products = Array.isArray(data.products) ? data.products : [];
+            const options = Array.isArray(data.options) ? data.options : [];
     
+            // Show bot response text
             addMessage(botText, "bot-message");
     
+            // Show products (if any)
             if (products.length > 0) {
               const formatted = products.map(item => `
                 <div style="margin-bottom: 12px;">
@@ -359,24 +360,23 @@ window.addEventListener('load', function () {
               addMessage(formatted, "bot-message");
             }
     
+            // Show options (if any)
             if (options.length > 0) {
               addOptions(options);
             }
     
-            // ✅ Re-enable input
             input.disabled = false;
             sendBtn.disabled = false;
           })
           .catch(err => {
             removeTypingIndicator(typingIndicator);
             console.error("🔥 Fetch failed:", err);
-            addMessage("Lo siento, ocurrió un error.", "bot-message");
+            addMessage("⚠️ Lo siento, ocurrió un error en el servidor. Inténtalo de nuevo.", "bot-message");
     
-            // ✅ Still re-enable even on error
             input.disabled = false;
             sendBtn.disabled = false;
           });
-      }, 1000); // ⏱ 4-second delay
+      }, 1000); // Delay is cosmetic
     }
 
     function sendMessage() {
