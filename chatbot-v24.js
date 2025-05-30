@@ -291,8 +291,6 @@ window.addEventListener('load', function () {
       if (indicator && indicator.remove) indicator.remove();
     }
 
-    addMessage("👋 ¿Necesitas ayuda con nuestros productos?");
-
     toggle.addEventListener("click", () => {
       container.classList.toggle("visible");
     
