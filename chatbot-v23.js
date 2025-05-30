@@ -298,14 +298,14 @@ window.addEventListener('load', function () {
     
       // ✅ Only trigger this once when chat is first opened
       if (!window.__chatbotInitialized) {
-        fetch("https://production-goshop-d116fe7863dc.herokuapp.com/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message: "",
-            user_id: getUserId()
-          })
+      fetch("https://production-goshop-d116fe7863dc.herokuapp.com/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: "__init__",
+          user_id: getUserId()
         })
+      })
         .then(res => res.json())
         .then(data => {
           if (data.text) addMessage(data.text, "bot-message");
