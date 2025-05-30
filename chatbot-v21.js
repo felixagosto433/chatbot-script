@@ -314,6 +314,29 @@ window.addEventListener('load', function () {
 
     toggle.addEventListener("click", () => {
       container.classList.toggle("visible");
+    
+      // ✅ Only trigger this once when chat is first opened
+      if (!window.__chatbotInitialized) {
+        fetch("https://production-goshop-d116fe7863dc.herokuapp.com/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: "",
+            user_id: getUserId()
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.text) addMessage(data.text, "bot-message");
+          if (data.options?.length) addOptions(data.options);
+        })
+        .catch(err => {
+          console.error("🔥 Initial chat trigger failed:", err);
+          addMessage("Bot: Hola 👋 Pero no pude conectarme al servidor.", "bot-message");
+        });
+    
+        window.__chatbotInitialized = true;
+      }
     });
 
     function sendBotMessage(userMessage) {
