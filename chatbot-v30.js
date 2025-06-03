@@ -393,9 +393,7 @@ window.addEventListener('load', function () {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "X-Client-Version": "1.0.0",
-              "X-Request-ID": crypto.randomUUID(),
-              "Origin": window.location.origin
+              "Accept": "application/json"
             },
             body: JSON.stringify({
               message,
