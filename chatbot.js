@@ -439,6 +439,7 @@ window.addEventListener('load', function () {
 
       callApi(userMessage, getUserId())
         .then(data => {
+          console.log("API response:", data); // Debug log for API response
           removeTypingIndicator(typingIndicator);
           
           const botText = data.text?.trim() || "🤖 No entendí eso, ¿puedes intentarlo de otra forma?";
@@ -447,8 +448,13 @@ window.addEventListener('load', function () {
           const pharmacies = Array.isArray(data.pharmacies) ? data.pharmacies : [];
 
           // Remove any "(INIT)", "(REC)", "(CUS)", "(DONE)" prefixes from the text
-          const cleanBotText = botText.replace(/^\((INIT|REC|CUS|DONE)\)/, '').trim();
-          addMessage(cleanBotText, "bot-message");
+          const cleanBotText = botText.replace(/^(\(INIT|REC|CUS|DONE)\)/, '').trim();
+          // If backend returns an array of messages, show each as a separate bot message
+          if (Array.isArray(data.messages)) {
+            data.messages.forEach(msg => addMessage(msg, "bot-message"));
+          } else {
+            addMessage(cleanBotText, "bot-message");
+          }
 
           // Render pharmacies if present
           if (pharmacies.length > 0) {
@@ -474,8 +480,12 @@ window.addEventListener('load', function () {
                 <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">🔗 Ver producto</a>
               </div>
             `).join("");
-            
             addMessage(formatted, "bot-message");
+          }
+
+          // Show followup_text if present (now after results)
+          if (data.followup_text) {
+            addMessage(data.followup_text, "bot-message");
           }
 
           if (options && options.length > 0) {
@@ -532,7 +542,6 @@ window.addEventListener('load', function () {
       }
     });
 
-    // Offline support
     window.addEventListener('online', () => {
       log('Connection restored');
       addMessage("✅ Conexión restaurada", "bot-message");
