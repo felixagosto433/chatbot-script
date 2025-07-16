@@ -475,7 +475,7 @@ window.addEventListener('load', function () {
           if (products.length > 0) {
             const formatted = products.map(item => `
               <div style="margin-bottom: 12px; display: flex; align-items: flex-start; gap: 12px;">
-                ${item.image ? `<img src="${escapeHtml(item.image)}" alt="Imagen de ${escapeHtml(item.name)}" style="width:60px; height:60px; object-fit:cover; border-radius:8px; flex-shrink:0;">` : ''}
+                ${item.image ? `<img src="${escapeHtml(item.image)}" alt="Imagen de ${escapeHtml(item.name)}" style="max-width:60px; max-height:90px; object-fit:contain; background:#fff; border-radius:8px; flex-shrink:0; padding:4px; border:1px solid #eee;">` : ''}
                 <div>
                   <b>🟢 ${escapeHtml(item.name)}</b> - 💲${escapeHtml(item.price)}<br>
                   <b>🏷️ Categoría:</b> ${escapeHtml(item.category)}<br>
