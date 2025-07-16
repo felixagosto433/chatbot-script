@@ -273,6 +273,10 @@ window.addEventListener('load', function () {
           right: 10px;
         }
       }
+      .bot-message h3 {
+        margin-top: 0;
+        margin-bottom: 0.5em;
+      }
     `;
     document.head.appendChild(style);
 
